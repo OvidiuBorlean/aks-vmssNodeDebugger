@@ -1,0 +1,17 @@
+#!/bin/bash
+vmssName="aks-nodepool1-71056337-vmss"
+vmssRG="MC_AKS_AKS_NORTHEUROPE"
+SASUrl=""
+instanceList=$(az vmss list-instances -n $vmssName -g $vmssRG --query "[].[instanceId]" -o tsv)
+for instance in $instanceList
+do
+  echo "Query instance Id: $instance"
+  echo "---> Getting kubelet Identity"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "cat /etc/kubernetes/azure.json && nc -zv mcr.microsoft.com 443 && openssl x509 -in /etc/kubernetes/certs/apiserver.crt -text -noout | grep -A6 Vali"
+  echo "---> Gathering Logs"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --command-id RunShellScript --instance-id $instance --query 'value[0].message' -otsv --scripts  "tar -cvzf /tmp/akslogs.tgz /var/log/journal /var/log/*"
+  echo "---> Getting azcopy binary"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --command-id RunShellScript --instance-id $instance --query 'value[0].message' -otsv --scripts  "curl -L https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy.tgz &&  tar zxvf /tmp/azcopy.tgz -C /tmp && cp /tmp/azcopy*/azcopy /tmp"
+  echo "---> Uploading Results"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  '/tmp/azcopy copy "/tmp/akslogs.tgz" "$SASUrl"'
+done
