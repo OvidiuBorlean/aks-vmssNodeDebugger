@@ -9,3 +9,6 @@ Azure Storage Account Container SAS URL with Write permission
 https://github.com/github/OvidiuBorlean/aks-vmssNodeDebugger/blob/sas.png
 
 
+![SAS](sas.png)
+
+
