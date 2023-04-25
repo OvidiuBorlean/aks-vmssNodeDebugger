@@ -1,4 +1,5 @@
 #!/bin/bash
+az aks show -n aks -g aks --query nodeResourceGroup -o tsv
 vmssName="aks-nodepool1-71056337-vmss"
 vmssRG="MC_AKS_AKS_NORTHEUROPE"
 SASUrl=""
