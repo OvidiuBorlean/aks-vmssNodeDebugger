@@ -5,11 +5,11 @@ vmssRG="MC_AKS_AKS_NORTHEUROPE"
 SASUrl=""
 
 #!/bin/bash
-aksCluster="aks"
-aksRG="aks"
-aksNodeRG=$(az aks show -n $aksCluster -g $aksRG --query nodeResourceGroup -o tsv)
-aksVnetName=$(az network vnet list -g $aksNodeRG --query "[].[name]" -o tsv)
-aksDNSServers=$(az network vnet list -g $aksNodeRG --query "[].dhcpOptions.dnsServers" -o tsv)
+#aksCluster="aks"
+#aksRG="aks"
+#aksNodeRG=$(az aks show -n $aksCluster -g $aksRG --query nodeResourceGroup -o tsv)
+#aksVnetName=$(az network vnet list -g $aksNodeRG --query "[].[name]" -o tsv)
+#aksDNSServers=$(az network vnet list -g $aksNodeRG --query "[].dhcpOptions.dnsServers" -o tsv)
 
 
 instanceList=$(az vmss list-instances -n $vmssName -g $vmssRG --query "[].[instanceId]" -o tsv)
