@@ -31,4 +31,6 @@ do
   #az vmss run-command invoke -g $vmssRG -n $vmssName --command-id RunShellScript --instance-id $instance --query 'value[0].message' -otsv --scripts  "curl -L https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy.tgz &&  tar zxvf /tmp/azcopy.tgz -C /tmp && cp /tmp/azcopy*/azcopy /tmp"
   #echo "---> Uploading Results"
   #az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "/tmp/azcopy copy '/tmp/akslogs.tgz' '$SASUrl'"
+  echo Checking CNI Availability
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "curl -o cni.tgz https://acs-mirror.azureedge.net/azure-cni/v1.4.43/binaries/azure-vnet-cni-swift-linux-amd64-v1.4.43.tgz"
 done
