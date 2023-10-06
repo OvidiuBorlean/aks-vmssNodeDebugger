@@ -1,0 +1,13 @@
+#!/bin/bash
+vmssName="aks-nodepool1-24126082-vmss"
+vmssRG="MC_AKS_AKS_WESTEUROPE"
+instanceList=$(az vmss list-instances -n $vmssName -g $vmssRG --query "[].[instanceId]" -o tsv)
+SAS=""
+for instance in $instanceList
+do
+   az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "curl -L https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy.tgz"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "tar zxvf /tmp/azcopy.tgz -C /tmp"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "cp /tmp/azcopy*/azcopy /tmp"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "tcpdump -G 300 -W 1 -w /tmp/netcapture"
+  az vmss run-command invoke -g $vmssRG -n $vmssName --instance-id $instance --command-id RunShellScript --query 'value[0].message' -otsv --scripts  "/tmp/azcopy copy "/tmp/$nodeName" "$SAS""
+done
